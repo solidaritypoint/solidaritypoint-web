@@ -1,0 +1,29 @@
+version: '3'
+services:
+  php:
+    build:
+      context: .
+      dockerfile: ./_docker/php/Dockerfile
+    volumes:
+      - .:/var/www
+      - ./public:/var/www/html
+      - /etc/localtime:/etc/localtime:ro
+    working_dir: /var/www
+    environment:
+      - COMPOSER_MEMORY_LIMIT=-1
+    networks:
+      - spweb
+  db:
+    image: mariadb:10.5.13
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=solidaritypoint
+    volumes:
+      - ./_docker/db:/var/lib/mysql
+      - ./_docker/mysql/init:/docker-entrypoint-initdb.d
+    networks:
+      - spweb
+
+networks:
+  spweb:
+    driver: bridge
